@@ -9,12 +9,15 @@ j.urenag@alumnos.urjc.es
 (Universidad Rey Juan Carlos)
 """
 
-import webbapp.py
+import webapp
+import socket
 
 url_short={}
 url_long={}
 
 #To Do deberia mostrar toda la biblioteca, no volver a si mismo
+
+#form action siempre devulve a barra, y en el caso de que me pasen una url buena ya pondre yo que tengo que mandar a otra pagina
 FORMULARIO= """
 <form action="" method="POST"> 
 URL que quiere guardar:<br>
@@ -25,7 +28,7 @@ URL que quiere guardar:<br>
 
 
 
-class practica1(webapp1):
+class practica1(webapp.webApp):
 
     def parse(self, request):
         """Parse the received request, extracting the relevant information."""
@@ -40,13 +43,30 @@ class practica1(webapp1):
         Returns the HTTP code for the reply, and an HTML page.
         """
         method, resource, request=parsedRequest
-        
+        text=""
         if method=="GET":
             if resource=="/":
-                answer=
+                code="200 OK"
                 
+                for keys, values in url_short.items():
+                    text=text+"["+keys+"] -> ("+values+")</br>"
+                answer=("<html><body><h1>DICCIONARIO URLs</h1>"+FORMULARIO+"Actualmente las URLs acorttadas son:</br>"+ text + "</body></html>")
+                
+            elif resource in url_short:
+                code="200 OK"
+                text=resource +"   "+ url_short[resource]
+                answer=("<html><body><h1>REDIRECCIONO</h1></br>"+text+"</body></html>")
+            else:
+                code="404 NOT FOUND"
+                answer=("<html><h1>PROBLEMA</h1></html>")
+        elif method=="POST":
+            body=request.split('\r\n\r\n',1)[1]
+            url_short["/"+str(len(url_short))] =body.split('=')[1]
+            url_long[body.split('=')[1]] =len(url_long)
+            code="200 OK"
+            answer=("<html><h1>AÑADIDO</h1></html>")   
 
-        return ("200 OK", "<html><body><h1>It works!</h1></body></html>")
+        return (code, answer)
 
     def __init__(self, hostname, port):
         """Initialize the web application."""
@@ -76,4 +96,4 @@ class practica1(webapp1):
             recvSocket.close()
             
 if __name__ == "__main__":
-    testWebApp = webApp("localhost", 1234)
+    testWebApp = practica1("localhost", 1234)
