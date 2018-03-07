@@ -54,9 +54,9 @@ class practica1(webapp.webApp):
                 answer=("<html><body><h1>DICCIONARIO URLs</h1>"+FORMULARIO+"Actualmente las URLs acorttadas son:</br>"+ text + "</body></html>")
                 
             elif resource in url_short:
-                code="200 OK"
+                code="302 Found \r\nLocation: "+url_short[resource]
                 text=resource +"   "+ url_short[resource]
-                answer=("<html><body><h1>REDIRECCIONO</h1></br>"+text+"</body></html>")
+                answer=("<html><body><h1></h1></body></html>")
             else:
                 code="404 NOT FOUND"
                 answer=("<html><h1>PROBLEMA</h1></html>")
@@ -65,14 +65,18 @@ class practica1(webapp.webApp):
             url=body.split('=')[1]
             print(url)
             url=url
+            #hay que decodificar
             if (url.startswith('http://') or url.startswith('https://')):
                 url_short["/"+str(len(url_short))] =url
                 url_long[body.split('=')[1]] =len(url_long)
             else:
-                url_short["/"+str(len(url_short))] ="http://"+url
+                url="http://"+url
+                pos="/"+str(len(url_short))
+                url_short[pos] =url
                 url_long[body.split('=')[1]] =len(url_long) 
             code="200 OK"
-            answer=("<html><h1>AÑADIDO</h1></html>")   
+            #Error no muestra la corta correctamente
+            answer=("<html><body><h1>La URL se ha guardado correctamente</h1><a href="+url+">URL Original</a> </br><a href=localhost:1234"+pos+">URL corta</a></body></html>")   
 
         return (code, answer)
 
@@ -94,7 +98,7 @@ class practica1(webapp.webApp):
             print('Waiting for connections')
             (recvSocket, address) = mySocket.accept()
             print('HTTP request received (going to parse and process):')
-            request = recvSocket.recv(2048).decode('hex').decode('utf-8')
+            request = recvSocket.recv(2048).decode('utf-8')
             print(request)
             parsedRequest = self.parse(request)
             (returnCode, htmlAnswer) = self.process(parsedRequest)
