@@ -11,6 +11,7 @@ j.urenag@alumnos.urjc.es
 
 import webapp
 import socket
+import codecs
 
 url_short={}
 url_long={}
@@ -47,9 +48,9 @@ class practica1(webapp.webApp):
         if method=="GET":
             if resource=="/":
                 code="200 OK"
-                
+        
                 for keys, values in url_short.items():
-                    text=text+"["+keys+"] -> ("+values+")</br>"
+                    text=text+"["+keys+"]:("+values+")</br>"
                 answer=("<html><body><h1>DICCIONARIO URLs</h1>"+FORMULARIO+"Actualmente las URLs acorttadas son:</br>"+ text + "</body></html>")
                 
             elif resource in url_short:
@@ -61,8 +62,15 @@ class practica1(webapp.webApp):
                 answer=("<html><h1>PROBLEMA</h1></html>")
         elif method=="POST":
             body=request.split('\r\n\r\n',1)[1]
-            url_short["/"+str(len(url_short))] =body.split('=')[1]
-            url_long[body.split('=')[1]] =len(url_long)
+            url=body.split('=')[1]
+            print(url)
+            url=url
+            if (url.startswith('http://') or url.startswith('https://')):
+                url_short["/"+str(len(url_short))] =url
+                url_long[body.split('=')[1]] =len(url_long)
+            else:
+                url_short["/"+str(len(url_short))] ="http://"+url
+                url_long[body.split('=')[1]] =len(url_long) 
             code="200 OK"
             answer=("<html><h1>AÑADIDO</h1></html>")   
 
@@ -86,7 +94,7 @@ class practica1(webapp.webApp):
             print('Waiting for connections')
             (recvSocket, address) = mySocket.accept()
             print('HTTP request received (going to parse and process):')
-            request = recvSocket.recv(2048).decode('utf-8')
+            request = recvSocket.recv(2048).decode('hex').decode('utf-8')
             print(request)
             parsedRequest = self.parse(request)
             (returnCode, htmlAnswer) = self.process(parsedRequest)
