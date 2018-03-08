@@ -61,6 +61,15 @@ class practica1(webapp.webApp):
         return method, resource, request
         
         
+        
+        
+    def dict_to_string(self, dictionary):
+        text=""
+        for keys, values in dictionary.items():
+            text=text+"["+keys+"]:("+values+")</br>"
+        return text
+        
+        
 #si me pasan url en blanco, comprobar.    
 #Cambiar nombre variable 
     def process(self, parsedRequest):
@@ -74,9 +83,7 @@ class practica1(webapp.webApp):
         if method=="GET":
             if resource=="/":
                 code="200 OK"
-        
-                for keys, values in url_short.items():
-                    text=text+"["+keys+"]:("+values+")</br>"
+                text=self.dict_to_string(url_short) 
                 answer=("<html><body><h1>DICCIONARIO URLs</h1>"+FORMULARIO+"Actualmente las URLs acortadas son:</br>"+ text + "</body></html>")
                 
             elif resource in url_short:
