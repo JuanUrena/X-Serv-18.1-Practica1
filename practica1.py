@@ -28,6 +28,10 @@ URL que quiere guardar:<br>
 """
 
 
+data=open("data_url")
+
+urls_code=data.read().split()
+print (urls_code)
 
 class practica1(webapp.webApp):
 
