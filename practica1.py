@@ -11,7 +11,7 @@ j.urenag@alumnos.urjc.es
 
 import webapp
 import socket
-import codecs
+from urllib.parse import unquote
 
 url_short={}
 url_long={}
@@ -51,7 +51,7 @@ class practica1(webapp.webApp):
         
                 for keys, values in url_short.items():
                     text=text+"["+keys+"]:("+values+")</br>"
-                answer=("<html><body><h1>DICCIONARIO URLs</h1>"+FORMULARIO+"Actualmente las URLs acorttadas son:</br>"+ text + "</body></html>")
+                answer=("<html><body><h1>DICCIONARIO URLs</h1>"+FORMULARIO+"Actualmente las URLs acortadas son:</br>"+ text + "</body></html>")
                 
             elif resource in url_short:
                 code="302 Found \r\nLocation: "+url_short[resource]
@@ -64,22 +64,25 @@ class practica1(webapp.webApp):
             body=request.split('\r\n\r\n',1)[1]
             url=body.split('=')[1]
             print(url)
-            url=url
-            #hay que decodificar
-            if (url.startswith('http://') or url.startswith('https://')):
-                url_short["/"+str(len(url_short))] =url
-                url_long[body.split('=')[1]] =len(url_long)
-            else:
+            url=unquote(unquote(url))
+            print(url)
+            if not (url.startswith('http://') or url.startswith('https://')):
                 url="http://"+url
+            if not (url in url_long):
                 pos="/"+str(len(url_short))
                 url_short[pos] =url
-                url_long[body.split('=')[1]] =len(url_long) 
-            code="200 OK"
-            #Error no muestra la corta correctamente
-            answer=("<html><body><h1>La URL se ha guardado correctamente</h1><a href="+url+">URL Original</a> </br><a href=localhost:1234"+pos+">URL corta</a></body></html>")   
+                url_long[url] =pos
+                code="200 OK"
+                answer=("<html><body><h1>La URL se ha guardado correctamente</h1><a href="+url+">URL Original</a> </br><a href=http://localhost:1234"+pos+">URL corta</a></body></html>")
+            else: 
+#hay que hacer esta parte de mostrar donde esta url corta
+                print("Hay que mandar el codigo y demas") 
+                code="200 OK"
+                answer=("<html><body><h1>La URL ya estaba en la lista</h1></body></html>")
+            
 
         return (code, answer)
-
+#Revisar si quitar.
     def __init__(self, hostname, port):
         """Initialize the web application."""
 
