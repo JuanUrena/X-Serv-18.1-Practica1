@@ -28,23 +28,7 @@ URL que quiere guardar:<br>
 """
 
 
-if (os.path.isfile("data_url")):
-    data=open("data_url")
-else:
-    data=open("data_url", "w")
-    data.close()
-    data=open("data_url")
-   
-urls_code=data.read().split()
-data.close()
-#print (urls_code)
-    
-#moverlo al if name main 
-for url in urls_code:
-    key=url.split(":",1)[0]
-    value=url.split(":",1)[1]
-    url_short[key] =value
-    url_long[value] =key
+
 
 class practica1(webapp.webApp):
 
@@ -125,4 +109,22 @@ class practica1(webapp.webApp):
 
             
 if __name__ == "__main__":
+    if (os.path.isfile("data_url")):
+        data=open("data_url")
+    else:
+        data=open("data_url", "w")
+        data.close()
+        data=open("data_url")
+   
+    urls_code=data.read().split()
+    data.close()
+    #print (urls_code)
+        
+    #moverlo al if name main 
+    for url in urls_code:
+        key=url.split(":",1)[0]
+        value=url.split(":",1)[1]
+        url_short[key] =value
+        url_long[value] =key
     testWebApp = practica1("localhost", 1234)
+    
