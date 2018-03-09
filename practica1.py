@@ -51,8 +51,17 @@ class practica1(webapp.webApp):
         text=""
         for keys, values in dictionary.items():
             text=text+"["+keys+"]:("+values+")</br>"
-        return text
+        return text 
         
+    def request_to_url(self, request):
+        body=request.split('\r\n\r\n',1)[1]
+        return body.split('=')[1]
+        
+    def process_url(self, url):
+        url=unquote(unquote(url))
+        if not (url.startswith('http://') or url.startswith('https://')):
+                    url="http://"+url
+        return url
         
 #si me pasan url en blanco, comprobar.    
 #Cambiar nombre variable 
@@ -78,15 +87,9 @@ class practica1(webapp.webApp):
                 code="404 NOT FOUND"
                 answer=("<html><h1>PROBLEMA</h1></html>")
         elif method=="POST":
-            body=request.split('\r\n\r\n',1)[1]
-            url=body.split('=')[1]
-            print(url)
-            
+            url=self.request_to_url(request)
             if (url):
-                url=unquote(unquote(url))
-                print(url)
-                if not (url.startswith('http://') or url.startswith('https://')):
-                    url="http://"+url
+                url=self.process_url(url)
                 if not (url in url_long):
                     pos="/"+str(len(url_short))
                     url_short[pos] =url
