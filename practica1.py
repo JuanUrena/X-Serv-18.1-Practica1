@@ -66,7 +66,17 @@ class practica1(webapp.webApp):
     def add_to_dict(self, key, value, dic):
         dic[key] =value
         return dic
- 
+        
+    def process_answer(self, head, body):
+        answer="<html><body><h1>" + head + "</h1>"
+        answer=answer + body + "</body></html>"
+        return answer
+    
+    def add_to_file(self, archive, text):
+        data=open(archive, "a")
+        data.write(text)
+        data.close()
+          
     #crear funcion que genere el mensaje http
     #tratar errores si el fichero se lee mal o similar.     
     
@@ -78,24 +88,25 @@ class practica1(webapp.webApp):
         method, resource, request=parsedRequest
         global url_short
         global url_long
+        global FORMULARIO
+        global data
         text=""
         answer=""
         code="200 OK"
         if method=="GET":
             print ("aqui")
-            if resource=="/":
+            if (resource=="/"):
                 code="200 OK"
-                text=self.dict_to_string(url_short) 
-                print ("aqui")
-                answer=("<html><body><h1>DICCIONARIO URLs</h1>"+FORMULARIO+"Actualmente las URLs acortadas son:</br>"+ text + "</body></html>")
-                
+                text=FORMULARIO+"Actualmente las URLs acortadas son:</br>"+ self.dict_to_string(url_short)
+                answer=self.process_answer("ACORTADOR URLs", text)
             elif resource in url_short:
-                code="302 Found \r\nLocation: "+url_short[resource]
-                text=resource +"   "+ url_short[resource]
-                answer=("<html><body><h1></h1></body></html>")
+                print ("REDIRECCIONO")
+                code="302 Found \r\nLocation:"+ url_short[resource]
+                print(code)
+                answer=self.process_answer("", "")
             else:
                 code="404 NOT FOUND"
-                answer=("<html><h1>PROBLEMA</h1></html>")
+                answer=self.process_answer("404 NOT FOUND", "No se ha encontrado el recurso")
         elif method=="POST":
             url=self.request_to_url(request)
             if (url):
@@ -107,19 +118,17 @@ class practica1(webapp.webApp):
                     url_long=self.add_to_dict(url, pos, url_long)
                     #url_long[url] =pos
                     code="200 OK"
-                    answer=("<html><body><h1>La URL se ha guardado correctamente</h1><a href="+url+">URL Original</a> </br><a href=http://localhost:1234"+pos+">URL corta</a></body></html>")
-                    data=open("data_url", "a")
-                    data.write(pos+":"+url+"\n")
-                    data.close()
+                    text="<a href="+url+">"+url+"</a></br><a href="+pos+">http://localhost:1234"+pos+"</a>"
+                    answer=self.process_answer("La URL se ha guardado correctamente", text)
+                    data=self.add_to_file("data_url", pos+":"+url+"\n")
                 else: 
                     print("La url ya estaba guardada") 
                     code="200 OK"
-                    answer=("<html><body><h1>La URL ya estaba en la lista, su direccion es:</h1><a href="+url_long[url]+">http://localhost:1234"+url_long[url]+"</a> </body></html>")
+                    text="<a href="+url_long[url]+">http://localhost:1234"+url_long[url]+"</a>"
+                    answer=self.process_answer("La URL ya estaba en la lista", text)
             else: 
                 code="200 OK"
-                answer=("<html><h1>Rosu hermano quieres casarte conmigo <3 </h1></html>")
-            
-
+                answer=self.answer("Error", "Parece que el valor introducido no es valido")
         return (code, answer)
 
             
