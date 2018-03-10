@@ -63,20 +63,30 @@ class practica1(webapp.webApp):
                     url="http://"+url
         return url
         
-#si me pasan url en blanco, comprobar.    
+    def add_to_dict(self, key, value, dic):
+        dic[key] =value
+        return dic
+ 
+    #crear funcion que genere el mensaje http
+    #tratar errores si el fichero se lee mal o similar.     
+    
 #Cambiar nombre variable 
     def process(self, parsedRequest):
         """Process the relevant elements of the request.
         Returns the HTTP code for the reply, and an HTML page.
         """
         method, resource, request=parsedRequest
+        global url_short
+        global url_long
         text=""
         answer=""
         code="200 OK"
         if method=="GET":
+            print ("aqui")
             if resource=="/":
                 code="200 OK"
                 text=self.dict_to_string(url_short) 
+                print ("aqui")
                 answer=("<html><body><h1>DICCIONARIO URLs</h1>"+FORMULARIO+"Actualmente las URLs acortadas son:</br>"+ text + "</body></html>")
                 
             elif resource in url_short:
@@ -92,8 +102,10 @@ class practica1(webapp.webApp):
                 url=self.process_url(url)
                 if not (url in url_long):
                     pos="/"+str(len(url_short))
-                    url_short[pos] =url
-                    url_long[url] =pos
+                    #url_short[pos] =url
+                    url_short=self.add_to_dict(pos, url, url_short)
+                    url_long=self.add_to_dict(url, pos, url_long)
+                    #url_long[url] =pos
                     code="200 OK"
                     answer=("<html><body><h1>La URL se ha guardado correctamente</h1><a href="+url+">URL Original</a> </br><a href=http://localhost:1234"+pos+">URL corta</a></body></html>")
                     data=open("data_url", "a")
