@@ -13,6 +13,7 @@ import webapp
 import socket
 from urllib.parse import unquote
 import os.path
+import sys
 
 url_short={}
 url_long={}
@@ -122,7 +123,7 @@ class practica1(webapp.webApp):
                     code="200 OK"
                     text="<a href="+url+">"+url+"</a></br><a href="+pos+">http://localhost:1234"+pos+"</a>"
                     answer=self.process_answer("La URL se ha guardado correctamente", text)
-                    data=self.add_to_file("data_url", pos+":"+url+"\n")
+                    data=self.add_to_file("data_url", pos+","+url+"\n")
                 else: 
 #La url ya estaba en el diccionario
                     code="200 OK"
@@ -154,21 +155,19 @@ if __name__ == "__main__":
 #Creacion de diccionarios
     try:
         for url in urls_code:
-            key=url.split(":",1)[0]
-            value=url.split(":",1)[1]
+            key=url.split(",",1)[0]
+            value=url.split(",",1)[1]
             url_short[key] =value
             url_long[value] =key
     except IndexError:
         print("Parece haber un error en el archivo de lectura, puede que algunos datos no se hayan recuperado")
     except :
-        print("Ha ocurrido un ERROR. Reinicie el Server.")
-        break
+        sys.exit("Ha ocurrido un ERROR. Reinicie el Server.")
         
     try:
         testWebApp = practica1("localhost", 1234)
     except KeyboardInterrupt:
-        print("\nEl Server ha sido apagado")
+        sys.exit("\nEl Server ha sido apagado")
     except :
-        print("Ha ocurrido un ERROR. Reinicie el Server.")
-        break
+        sys.exit("Ha ocurrido un ERROR. Reinicie el Server.")
     
