@@ -116,7 +116,7 @@ class practica1(webapp.webApp):
                 # Compruebo si esta vacio el String
                 url = self.process_url(url)
                 if not (url in url_long):
-                    # Si no está en mi diccionario la añado
+                    # Si no está en mi diccionario añado url
                     pos = "/" + str(len(url_short))
                     url_short = self.add_to_dict(pos, url, url_short)
                     url_long = self.add_to_dict(url, pos, url_long)
